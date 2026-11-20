@@ -1,78 +1,113 @@
 """
-reserva_sala.py - Servicio de reserva de salas.
+reserva_sala.py - Servicio de reserva de salas de Software FJ.
 """
+
+from typing import Any
+import math
+
 from servicio import Servicio
-from excepciones import CalculoCostoError, ParametroObligatorioError
+from excepciones import (
+    CalculoCostoError,
+    ParametroObligatorioError
+)
+
 
 class ReservaSala(Servicio):
     """
-    Servicio de reserva de salas con capacidades específicas.
+    Servicio para reservar salas de reuniones y eventos.
     """
-    
-    def __init__(self, id_servicio: str, nombre: str, costo_base: float, capacidad: int):
-        """
-        Inicializa un servicio de reserva de sala.
-        
-        Args:
-            id_servicio: ID del servicio
-            nombre: Nombre del servicio
-            costo_base: Costo base por hora
-            capacidad: Capacidad máxima de la sala
-            
-        Raises:
-            CalculoCostoError: Si la capacidad es inválida
-        """
+
+    def __init__(
+        self,
+        id_servicio: str,
+        nombre: str,
+        costo_base: float,
+        capacidad: int
+    ):
         super().__init__(id_servicio, nombre, costo_base)
-        
-        if capacidad <= 0:
-            raise CalculoCostoError("La capacidad debe ser positiva")
-        
-        self._capacidad = int(capacidad)
-    
+
+        if (
+            isinstance(capacidad, bool)
+            or not isinstance(capacidad, int)
+            or capacidad <= 0
+        ):
+            raise CalculoCostoError(
+                "La capacidad debe ser un número entero mayor que cero."
+            )
+
+        self._capacidad = capacidad
+
     @property
     def capacidad(self) -> int:
-        """Capacidad de la sala."""
         return self._capacidad
-    
-    def calcular_costo(self, duracion: int, impuesto: float = 0.1, descuento: float = 0.0, personas: int = 1) -> float:
+
+    def calcular_costo(
+        self,
+        duracion: int,
+        impuesto: float = 0.10,
+        descuento: float = 0.0,
+        personas: int = 1
+    ) -> float:
         """
-        Calcula el costo de la reserva de sala con impuestos y descuentos.
-        
-        Args:
-            duración: Duración en horas
-            impuesto: Porcentaje de impuesto (0.1 = 10%)
-            descuento: Porcentaje de descuento (0.05 = 5%)
-            personas: Número de personas (para validación de capacidad)
-            
-        Returns:
-            float: Costo calculado
-            
-        Raises:
-            CalculoCostoError: Si la duración es inválida o personas exceden capacidad
+        Calcula el costo de la reserva de sala.
+        Permite aplicar impuestos y descuentos.
         """
-        # Llamar al método del padre para validación básica
+
+        # Validar duración utilizando la clase padre
         super().calcular_costo(duracion)
-        
+
+        # Validar cantidad de personas
+        if (
+            isinstance(personas, bool)
+            or not isinstance(personas, int)
+            or personas <= 0
+        ):
+            raise CalculoCostoError(
+                "La cantidad de personas debe ser un entero positivo."
+            )
+
         if personas > self._capacidad:
-            raise CalculoCostoError(f"El número de personas ({personas}) excede la capacidad de la sala ({self._capacidad})")
-        
+            raise CalculoCostoError(
+                "La cantidad de personas supera la capacidad de la sala."
+            )
+
+        # Validar impuesto
+        if (
+            isinstance(impuesto, bool)
+            or not isinstance(impuesto, (int, float))
+            or not math.isfinite(impuesto)
+            or impuesto < 0
+        ):
+            raise CalculoCostoError(
+                "El impuesto debe ser un número mayor o igual a cero."
+            )
+
+        # Validar descuento
+        if (
+            isinstance(descuento, bool)
+            or not isinstance(descuento, (int, float))
+            or not math.isfinite(descuento)
+            or not 0 <= descuento <= 1
+        ):
+            raise CalculoCostoError(
+                "El descuento debe estar entre 0 y 1."
+            )
+
         costo_base = self._costo_base * duracion
         costo_con_impuesto = costo_base * (1 + impuesto)
         costo_final = costo_con_impuesto * (1 - descuento)
-        
+
         return round(costo_final, 2)
-    
+
     def __str__(self) -> str:
-        return f"ReservaSala(ID: {self._id_servicio}, Nombre: {self._nombre}, Capacidad: {self._capacidad}, Costo base: ${self._costo_base:,.2f})"
-    
+        return (
+            f"{super().__str__()} | "
+            f"Capacidad: {self._capacidad} personas"
+        )
+
     def to_dict(self) -> dict[str, Any]:
-        """
-        Convierte el servicio a un diccionario.
-        
-        Returns:
-            dict: Datos del servicio
-        """
         datos = super().to_dict()
-        datos['capacidad'] = self._capacidad
-        datos['tipo'] = 'ReservaSala'
+        datos["capacidad"] = self._capacidad
+        datos["tipo"] = "Reserva de sala"
+
         return datos
