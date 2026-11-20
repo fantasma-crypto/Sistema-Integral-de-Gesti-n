@@ -1,35 +1,43 @@
 """
-excepciones.py - Excepciones personalizadas para el sistema.
+excepciones.py - Excepciones personalizadas para el sistema Software FJ.
 """
 
+
 class ClienteInvalidoError(Exception):
-    """Excepción para clientes inválidos."""
+    """Error cuando los datos de un cliente no son válidos."""
     pass
+
 
 class ServicioNoDisponibleError(Exception):
-    """Excepción para servicios no disponibles."""
+    """Error cuando un servicio no está disponible."""
     pass
+
 
 class ReservaInvalidaError(Exception):
-    """Excepción para reservas inválidas."""
+    """Error cuando una reserva contiene datos incorrectos."""
     pass
+
 
 class DuracionInvalidaError(Exception):
-    """Excepción para duraciones inválidas."""
+    """Error cuando la duración de una reserva no es válida."""
     pass
+
 
 class ParametroObligatorioError(Exception):
-    """Excepción para parámetros obligatorios faltantes."""
+    """Error cuando falta un parámetro obligatorio."""
     pass
+
 
 class EstadoReservaError(Exception):
-    """Excepción para errores en el estado de la reserva."""
+    """Error cuando se intenta realizar una transición de estado no permitida."""
     pass
+
 
 class CalculoCostoError(Exception):
-    """Excepción para errores en el cálculo de costos."""
+    """Error cuando ocurre un problema al calcular el costo de un servicio."""
     pass
 
+
 class ArchivoError(Exception):
-    """Excepción para errores de archivo."""
+    """Error relacionado con la lectura o escritura de archivos."""
     pass
